@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 
-// ── Scene ─────────────────────────────────────────────────────────────────────
+// Scene
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x111111);
 
@@ -21,7 +21,7 @@ window.addEventListener('resize', () => {
   renderer.setSize(innerWidth, innerHeight);
 });
 
-// ── Camera look (pointer lock) ────────────────────────────────────────────────
+// ── Camera look
 let yaw = 0, pitch = 0;
 document.addEventListener('mousemove', e => {
   if (document.pointerLockElement !== renderer.domElement) return;
@@ -32,12 +32,12 @@ document.addEventListener('mousemove', e => {
   camera.rotation.x = pitch;
 });
 
-// ── Keyboard ──────────────────────────────────────────────────────────────────
+// 
 const keys = {};
 document.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
 document.addEventListener('keyup',   e => keys[e.key.toLowerCase()] = false);
 
-// ── Animation loop ────────────────────────────────────────────────────────────
+// 
 const _fwd = new THREE.Vector3(), _rgt = new THREE.Vector3(), UP = new THREE.Vector3(0, 1, 0);
 
 function animate() {
@@ -56,7 +56,7 @@ function animate() {
 }
 animate();
 
-// ── Environment ───────────────────────────────────────────────────────────────
+// ─
 const ambient = new THREE.AmbientLight(0xffffff, 1.0);
 scene.add(ambient);
 
@@ -99,8 +99,7 @@ const backdrop = new THREE.Mesh(
 backdrop.position.set(0, 40, -100);
 scene.add(backdrop);
 
-// depth 0 = shallow (lighter blue, more transparent)
-// depth 1 = deep    (darker navy,  more opaque)
+//depth
 function createPuddle(x, z, scaleX, scaleZ, depth) {
   const color = new THREE.Color(
     0.18 - depth * 0.12,
@@ -115,7 +114,7 @@ function createPuddle(x, z, scaleX, scaleZ, depth) {
     polygonOffsetFactor: -1,
     polygonOffsetUnits: -1,
   });
-  // road is at y=0.5, sidewalk top is at y=0.495 — sit clearly above both
+  // road is at y=0.5
   const onRoad = Math.abs(x) < 2;
   const mesh = new THREE.Mesh(new THREE.CircleGeometry(1.0, 32), mat);
   mesh.rotation.x = -Math.PI / 2;
@@ -124,7 +123,7 @@ function createPuddle(x, z, scaleX, scaleZ, depth) {
   scene.add(mesh);
 }
 
-// 2 on road, 3 on sidewalks — close to camera so they're in frame
+// 2 on road, 3 on sidewalks 
 createPuddle( -1,  0,  0.8, 0.05, 0.8);  // road,           circle
 createPuddle(-0.4, -35,  2.0, 0.7, 0.5);  // road,           wide ellipse
 createPuddle(-3.8,  -42,  1.1, 0.8, 0.3);  // left sidewalk,  just off road edge
@@ -139,7 +138,7 @@ const rightSW = new THREE.Mesh(new THREE.BoxGeometry(12, 0.15, 200), swMat);
 rightSW.position.set(3, 0.42, 0);
 scene.add(rightSW);
 
-// ── Buildings ─────────────────────────────────────────────────────────────────
+// Buildings
 const buildingTemplate = await new OBJLoader().loadAsync('models/B5.obj');
 
 function placeBuildings(positions, rotY) {
@@ -167,7 +166,7 @@ placeBuildings([
   { x: 13.2, z: -52 }, { x: 13.5, z: -56 }, { x: 13.4, z: -60 }, { x: 13.7, z: -64 },
 ], -Math.PI / 2);
 
-// ── Model helpers ─────────────────────────────────────────────────────────────
+// ─Model
 function addHeadlights(group) {
   const bulbMat = new THREE.MeshBasicMaterial({ color: 0xffffee });
   const bulbGeom = new THREE.SphereGeometry(0.1, 8, 8);
@@ -221,7 +220,7 @@ function createBike() {
   return g;
 }
 
-// ── Load model templates ──────────────────────────────────────────────────────
+// Model templates
 const loader = new OBJLoader();
 
 const carTemplate = await loader.loadAsync('models/Car.obj');
@@ -232,7 +231,7 @@ const humanTemplate = await loader.loadAsync('models/human-model.obj');
 humanTemplate.scale.set(0.1, 0.1, 0.1);
 humanTemplate.traverse(c => { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; } });
 
-// ── Interactives ──────────────────────────────────────────────────────────────
+// Interactives
 const interactives = [];
 const LIGHT_TYPES = new Set(['moon', 'sun', 'lamppost', 'neon', 'tungsten', 'hmi', 'window']);
 
@@ -251,7 +250,7 @@ const human = addToScene(humanTemplate.clone());
 human.position.set(0.7, 1.1, -5);
 human.userData = { groundOffset: 1.1, type: 'person' };
 
-// ── Light panel UI ────────────────────────────────────────────────────────────
+// ─Light panel
 const lightPanel    = document.getElementById('light-panel');
 const colorInput    = document.getElementById('light-color-input');
 const intensitySlider = document.getElementById('light-intensity-input');
@@ -302,7 +301,7 @@ intensitySlider.addEventListener('input', () => {
 // prevent panel interactions from propagating to the canvas
 lightPanel.addEventListener('mousedown', e => e.stopPropagation());
 
-// ── Drag & select ─────────────────────────────────────────────────────────────
+// Drag select
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 const hitPoint = new THREE.Vector3();
@@ -340,13 +339,13 @@ renderer.domElement.addEventListener('mousedown', e => {
 window.addEventListener('mousemove', e => {
   if (!dragging) return;
 
-  // Q: vertical movement
+  // Q for vertical movement
   if (keys['q']) {
     dragging.position.y -= e.movementY * 0.05;
     return;
   }
 
-  // Intersect a horizontal plane at the object's current height
+  // Intersect
   raycaster.setFromCamera(toNDC(e), camera);
   const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -dragging.position.y);
   if (!raycaster.ray.intersectPlane(plane, hitPoint)) return;
@@ -366,7 +365,7 @@ window.addEventListener('mousemove', e => {
       );
     }
   } else {
-    // Normal XZ drag — keep current Y
+    // Normal drag
     dragging.position.set(hitPoint.x, dragging.position.y, hitPoint.z);
   }
 });
@@ -382,7 +381,7 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// ── Spawn: library ────────────────────────────────────────────────────────────
+// Library spawn
 document.getElementById('btn-spawn-person').addEventListener('click', () => {
   const p = humanTemplate.clone();
   p.position.set((Math.random() - 0.5) * 4, 1.1, -8);
@@ -429,7 +428,7 @@ document.getElementById('btn-spawn-bike').addEventListener('click', () => {
   addToScene(b);
 });
 
-// ── Spawn: lights ─────────────────────────────────────────────────────────────
+//  Spawn lights
 document.getElementById('btn-light-moon').addEventListener('click', () => {
   const g = new THREE.Group();
   g.userData = { type: 'moon', sky: true };
@@ -524,7 +523,7 @@ document.getElementById('btn-light-window').addEventListener('click', () => {
   addToScene(g);
 });
 
-// ── Mode toggle ───────────────────────────────────────────────────────────────
+// Toggle modes
 let currentMode = 'flat';
 
 function updateMode(mode) {
@@ -542,7 +541,7 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
 });
 updateMode('flat');
 
-// ── Score modal ───────────────────────────────────────────────────────────────
+// Modal score
 const scoreModal   = document.getElementById('score-modal');
 const modalTitle   = document.getElementById('modal-title');
 const scoreCircle  = document.getElementById('modal-score-circle');

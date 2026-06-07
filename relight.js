@@ -99,6 +99,38 @@ const backdrop = new THREE.Mesh(
 backdrop.position.set(0, 40, -100);
 scene.add(backdrop);
 
+// depth 0 = shallow (lighter blue, more transparent)
+// depth 1 = deep    (darker navy,  more opaque)
+function createPuddle(x, z, scaleX, scaleZ, depth) {
+  const color = new THREE.Color(
+    0.18 - depth * 0.12,
+    0.26 - depth * 0.14,
+    0.45 - depth * 0.10
+  );
+  const mat = new THREE.MeshBasicMaterial({
+    color,
+    transparent: true,
+    opacity: 0.68 + depth * 0.22,
+    polygonOffset: true,
+    polygonOffsetFactor: -1,
+    polygonOffsetUnits: -1,
+  });
+  // road is at y=0.5, sidewalk top is at y=0.495 — sit clearly above both
+  const onRoad = Math.abs(x) < 2;
+  const mesh = new THREE.Mesh(new THREE.CircleGeometry(1.0, 32), mat);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.scale.set(scaleX, 1, scaleZ);
+  mesh.position.set(x, onRoad ? 0.51 : 0.50, z);
+  scene.add(mesh);
+}
+
+// 2 on road, 3 on sidewalks — close to camera so they're in frame
+createPuddle( -1,  0,  0.8, 0.05, 0.8);  // road,           circle
+createPuddle(-0.4, -35,  2.0, 0.7, 0.5);  // road,           wide ellipse
+createPuddle(-3.8,  -42,  1.1, 0.8, 0.3);  // left sidewalk,  just off road edge
+createPuddle(-4.2, -53,  1.3, 1.0, 0.6);  // left sidewalk,  medium down
+createPuddle( 3.8, -20,  1.0, 0.8, 0.4);  // right sidewalk, medium close
+
 const swMat = new THREE.MeshPhongMaterial({ color: 0x999999 });
 const leftSW = new THREE.Mesh(new THREE.BoxGeometry(12, 0.15, 200), swMat);
 leftSW.position.set(-3, 0.42, 0);

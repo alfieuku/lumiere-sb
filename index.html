@@ -437,6 +437,93 @@
         background: #7dd3fc;
         transform: translateY(-2px);
       }
+
+      #light-panel {
+        position: fixed;
+        right: 24px;
+        width: 240px;
+        background: var(--bg-glass);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--border-glass);
+        border-radius: 16px;
+        padding: 12px;
+        display: none;
+        flex-direction: column;
+        gap: 12px;
+        z-index: 20;
+        box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37);
+        pointer-events: auto;
+      }
+
+      #light-panel.visible { display: flex; }
+
+      .lp-header {
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--text-color);
+        border-bottom: 1px solid var(--border-glass);
+        padding-bottom: 6px;
+      }
+
+      .lp-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .lp-label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        flex-shrink: 0;
+      }
+
+      .lp-color-swatch {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid var(--border-glass-active);
+        cursor: pointer;
+        display: block;
+        flex-shrink: 0;
+      }
+
+      .lp-color-swatch input[type="color"] {
+        width: 150%;
+        height: 150%;
+        margin: -25% 0 0 -25%;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+      }
+
+      .lp-slider-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+      }
+
+      .lp-slider-row input[type="range"] {
+        flex: 1;
+        accent-color: var(--accent-blue);
+        cursor: pointer;
+      }
+
+      .lp-val {
+        font-size: 0.75rem;
+        color: var(--text-color);
+        font-weight: 500;
+        min-width: 30px;
+        text-align: right;
+      }
     </style>
   </head>
   <body>
@@ -589,7 +676,11 @@
         </div>
         <div class="info-row">
           <span class="info-key">Aim Light</span>
-          <span>Shift + Click Drag</span>
+          <span>Shift + Drag</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Lift</span>
+          <span>Q + Drag</span>
         </div>
         <div class="info-row">
           <span class="info-key">Delete</span>
@@ -610,6 +701,23 @@
         </div>
         
         <button class="modal-btn" id="modal-close-btn">Keep Going</button>
+      </div>
+    </div>
+
+    <div id="light-panel">
+      <div class="lp-header">Light Properties</div>
+      <div class="lp-row">
+        <span class="lp-label">Color</span>
+        <label class="lp-color-swatch">
+          <input type="color" id="light-color-input" value="#ffffff">
+        </label>
+      </div>
+      <div class="lp-row">
+        <span class="lp-label">Intensity</span>
+        <div class="lp-slider-row">
+          <input type="range" id="light-intensity-input" min="0" max="50" step="0.5" value="10">
+          <span class="lp-val" id="light-intensity-val">10.0</span>
+        </div>
       </div>
     </div>
 
